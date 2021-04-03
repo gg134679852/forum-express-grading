@@ -3,7 +3,7 @@ const Restaurant = db.Restaurant
 const User = db.User
 const fs = require('fs')
 const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const IMGUR_CLIENT_ID = 'd5542556c0e077f'
 
 const adminController = {
   getRestaurants: (req, res) => {
