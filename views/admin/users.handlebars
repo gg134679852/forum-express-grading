@@ -37,11 +37,13 @@
       {{/if}}
       </td>
       <td>
+        <form action="/admin/users/{{this.id}}/toggleAdmin?_method=PUT" method="post">
         {{#if this.isAdmin}}
-        <a href="/admin/users/{{this.id}}/toggleAdmin">set as user</a>
+        <button type="submit" class="btn btn-secondary">set as user</button>
         {{else}}
-        <a href="/admin/users/{{this.id}}/toggleAdmin">set as admin</a>
+        <button type="submit" class="btn btn-secondary">set as admin</button>
         {{/if}}
+        </form>
       </td>
     </tr>
     {{/each}}

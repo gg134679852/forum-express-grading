@@ -34,7 +34,6 @@ const adminController = {
   },
   postRestaurant: (req, res) => {
     if (!req.body.name) {
-      console.log(req.body)
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
     }
@@ -87,7 +86,6 @@ const adminController = {
   },
   putRestaurant: (req, res) => {
     if (!req.body.name) {
-      console.log(req.body.name)
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
     }
@@ -157,12 +155,6 @@ const adminController = {
       req.flash('success_messages', 'user was successfully to update')
       res.redirect('/admin/users')
     })
-  },
-  proFile: (req, res) => {
-    return User.findByPk(req.params.id)
-      .then((user) => {
-        res.render('admin/profile', user)
-      })
- }
+  }
 }
 module.exports = adminController
