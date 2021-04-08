@@ -32,8 +32,7 @@ app.use(flash())
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')
-  res.locals.user = helpers.getUser(req)
-  next()
+  res.locals.user = req.user
 })
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
