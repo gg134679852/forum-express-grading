@@ -37,19 +37,33 @@ module.exports = (app, passport) => {
     }
   }
   app.get('/', authenticated,(req, res) => res.redirect('/restaurants'))
+
   app.get('/restaurants', authenticated, restController.getRestaurants)
+
+  app.get('/restaurants/top', authenticated, userController.getTopRestaurant)
+
   app.get('/restaurants/feeds', authenticated, restController.getFeeds)
+
+  app.get('/users/top', authenticated, userController.getTopUser)
+
   app.get('/restaurants/:id', authenticated,restController.getRestaurant)
+
   app.get('/restaurants/:id/dashboard', authenticated, restController.dashboard)
+
   app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
   app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
+
   app.post('/like/:restaurantId', authenticated, userController.addLike)
   app.delete('/like/:restaurantId', authenticated, userController.removeLike)
+
   app.post('/comments', authenticated, commentController.postComment)
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
+
   app.get('/users/:id', authenticated, userController.proFile)
   app.get('/users/:id/edit', authenticated, userController.editProFile)
   app.put('/users/:id', authenticated, upload.single('image'),userController.putEditProFile)
+  app.post('/following/:userId', authenticated, userController.addFollowing)
+  app.delete('/following/:userId', authenticated, userController.removeFollowing)
   
 
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))

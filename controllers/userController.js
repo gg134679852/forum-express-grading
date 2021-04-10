@@ -1,3 +1,4 @@
+const sequelize = require('sequelize')
 const bcrypt = require('bcryptjs')
 const db = require('../models')
 const User = db.User
@@ -5,9 +6,11 @@ const Comment = db.Comment
 const Restaurant = db.Restaurant
 const Favorite = db.Favorite
 const Like = db.Like
+const Followship = db.Followship
 const fs = require('fs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = 'd5542556c0e077f'
+const helper = require('../_helpers')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -147,6 +150,80 @@ const userController = {
             return res.redirect('back')
           })
       })
+  },
+  getTopUser: (req, res) => {
+    return User.findAll({
+      include: [
+        { model: User, as: 'Followers' }
+      ]
+    }).then(users => {
+      users = users.map(user => ({
+        ...user.dataValues,
+        FollowerCount: user.Followers.length,
+
+        isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
+      }))
+
+      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
+      return res.render('topUser', { users: users })
+    })
+  },
+  addFollowing: (req, res) => {
+    return Followship.create({
+      followerId: req.user.id,
+      followingId: req.params.userId
+    })
+      .then((followship) => {
+        return res.redirect('back')
+      })
+  },
+
+  removeFollowing: (req, res) => {
+    return Followship.findOne({
+      where: {
+        followerId: req.user.id,
+        followingId: req.params.userId
+      }
+    })
+      .then((followship) => {
+        followship.destroy()
+          .then((followship) => {
+            return res.redirect('back')
+          })
+      })
+  },
+  getTopRestaurant: async (req, res, next) => {
+    try {
+      const restaurants = await Restaurant.findAll({
+        attributes: {
+          include: [
+            [sequelize.literal('(SELECT COUNT(*) FROM Favorites WHERE Favorites.RestaurantId = Restaurant.id)'), 'FavoritedCount']
+          ]
+        },
+        order: [
+          [sequelize.literal('FavoritedCount'), 'DESC']
+        ],
+        limit: 10,
+        raw: true,
+        nest: true,
+      })
+
+      restIds = restaurants.map(rest => rest.id)
+      const favorite = await Favorite.findAll({
+        where: {
+          UserId: helper.getUser(req).id,
+          RestaurantId: restIds,
+        },
+      })
+
+      const data = restaurants.map(restaurant => ({
+        ...restaurant,
+        isFavorited: favorite.map(f => f.RestaurantId).includes(restaurant.id)
+      }))
+      return res.render('topRestaurant', { restaurants: data })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 module.exports = userController
