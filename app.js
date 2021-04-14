@@ -22,6 +22,7 @@ app.engine('handlebars', handlebars({
 }))
 app.set('view engine', 'handlebars')
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(methodOverride('_method'))
 app.use(session({
   cookie: { maxAge: 86400000 },
